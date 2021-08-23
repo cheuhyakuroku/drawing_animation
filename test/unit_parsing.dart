@@ -2,7 +2,7 @@ import 'package:test/test.dart';
 import 'package:drawing_animation/src/parser.dart';
 
 void main() {
-  SvgParser parser = new SvgParser();
+  var parser = SvgParser();
   test('Test exceptions for color parsing', () {
     //Css-Styling
     expect(

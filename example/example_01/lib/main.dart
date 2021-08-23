@@ -1,17 +1,23 @@
+import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:drawing_animation/drawing_animation.dart';
-import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: MyHomePage());
+    return const MaterialApp(home: MyHomePage());
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -28,9 +34,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
           onPressed: () => setState(() {
-                this.run = !this.run;
+                run = !run;
               }),
-          child: Icon((this.run) ? Icons.stop : Icons.play_arrow)),
+          child: Icon((run) ? Icons.stop : Icons.play_arrow)),
       body: Center(
           child: Column(children: <Widget>[
         //Simplfied AnimatedDrawing using Flutter Path objects
@@ -45,13 +51,13 @@ class _MyHomePageState extends State<MyHomePage> {
           paints: [
             Paint()..style = PaintingStyle.stroke,
           ],
-          run: this.run,
+          run: run,
           animationOrder: PathOrders.original,
-          duration: new Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
           lineAnimation: LineAnimation.oneByOne,
           animationCurve: Curves.linear,
           onFinish: () => setState(() {
-            this.run = false;
+            run = false;
           }),
         )),
 
@@ -59,12 +65,12 @@ class _MyHomePageState extends State<MyHomePage> {
         Expanded(
             child: AnimatedDrawing.svg(
           "assets/circle.svg",
-          run: this.run,
-          duration: new Duration(seconds: 2),
+          run: run,
+          duration: const Duration(seconds: 2),
           lineAnimation: LineAnimation.oneByOne,
           animationCurve: Curves.linear,
           onFinish: () => setState(() {
-            this.run = false;
+            run = false;
           }),
         )),
       ])),

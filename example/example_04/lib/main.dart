@@ -1,30 +1,35 @@
-import 'dart:async';
 import 'dart:io';
-import 'dart:ui' as ui;
 import 'dart:math';
+import 'dart:ui' as ui;
 import 'package:drawing_animation/drawing_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:simple_permissions/simple_permissions.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: MyHomePage());
+    return const MaterialApp(home: MyHomePage());
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyHomepageState createState() => _MyHomepageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomepageState extends State<MyHomePage> {
   bool start = false;
   bool run = false;
-  Directory storageDir;
+  Directory? storageDir;
   String parentFolder = "drawing_animation";
   //Resulting in  a folder called `simple` containing simple_0.png ... simple_100.png
   String projectName = "project1";
@@ -35,25 +40,25 @@ class _MyHomePageState extends State<MyHomePage> {
     requestPermissions();
 
     //Metatron related
-    this.metatron = createMetatron();
+    metatron = createMetatron();
   }
 
   //Stores project folders on external storage of the phone
   Future<void> requestPermissions() async {
-    var res = await SimplePermissions.requestPermission(
-        Permission.WriteExternalStorage);
-    if (res == PermissionStatus.authorized) {
+    var res = await Permission.storage.request();
+
+    if (res == PermissionStatus.granted) {
       //External storage
-      this.storageDir = (await getExternalStorageDirectory());
+      storageDir = (await getExternalStorageDirectory());
       //current project
-      this.storageDir = Directory(
-          "${this.storageDir.path}/${this.parentFolder}/${this.projectName}");
+      storageDir = Directory("${storageDir!.path}/$parentFolder/$projectName");
       //Replace existing project folder
-      if (await this.storageDir.exists())
-        this.storageDir.deleteSync(recursive: true);
-      this.storageDir = await this.storageDir.create(recursive: true);
+      if ((await storageDir?.exists()) ?? false) {
+        storageDir?.deleteSync(recursive: true);
+      }
+      storageDir = await storageDir?.create(recursive: true);
       setState(() {
-        this.start = true;
+        start = true;
       });
     }
   }
@@ -63,13 +68,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
           onPressed: () => setState(() {
-                this.metatron = createMetatron();
-                this.run = !this.run;
+                metatron = createMetatron();
+                run = !run;
               }),
-          child: Icon((this.run) ? Icons.stop : Icons.play_arrow)),
+          child: Icon((run) ? Icons.stop : Icons.play_arrow)),
       body: Center(
           child: Column(children: <Widget>[
-        (this.start)
+        (start)
             ? Expanded(
                 child:
                     // [1] AnimatedDrawing.svg
@@ -77,14 +82,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     //   "assets/circle.svg",
                     // [2] AnimatedDrawing.paths
                     AnimatedDrawing.paths(
-                this.metatron,
-                paints: List<Paint>.generate(this.metatron.length, colorize),
-                run: this.run,
-                duration: new Duration(seconds: 1),
+                metatron,
+                paints: List<Paint>.generate(metatron.length, colorize),
+                run: run,
+                duration: const Duration(seconds: 1),
                 lineAnimation: LineAnimation.oneByOne,
                 animationCurve: Curves.linear,
                 onFinish: () => setState(() {
-                  this.run = false;
+                  run = false;
                 }),
                 //Uncomment this to write each frame to file
                 // debug: DebugOptions(
@@ -103,8 +108,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //Here starts the Metatron-------------------------------
   final double r = 2;
-  List<Path> metatron;
-  Grid g = new Grid();
+  List<Path> metatron = <Path>[];
+  Grid g = Grid();
 
   Path circle(Offset offset) {
     return Path()..addOval(Rect.fromCircle(center: offset, radius: r));
@@ -128,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Path center(Offset a, Offset b) {
-    Offset cp = Offset.lerp(a, b, 0.5);
+    Offset cp = Offset.lerp(a, b, 0.5) as Offset;
     return line(cp, g[2][2]);
   }
 
@@ -140,8 +145,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Path out(Offset a) {
-    Offset cp = Offset.lerp(g[2][2], a,
-        3 / 4); //TODO make it so only depends on r - no hardcoded values
+    Offset cp = Offset.lerp(g[2][2], a, 3 / 4)
+        as Offset; //TODO make it so only depends on r - no hardcoded values
     return line(g[2][2], cp);
   }
 
@@ -164,8 +169,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Paint colorize(int index) {
     //Main colors
     Color primaryColor = Colors.blueAccent;
-    Color secondaryColor = Colors.orangeAccent[100];
-    Color doodleColor = Colors.grey[300];
+    Color? secondaryColor = Colors.orangeAccent[100];
+    Color? doodleColor = Colors.grey[300];
     //Theme Flutter:
     // Color primaryColor = Colors.blue[600];
     // Color secondaryColor = Colors.yellow[700];
@@ -173,64 +178,71 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //Shaders
     double t = 5 * r;
-    var grad = ui.Gradient.radial(g[2][2], t, [doodleColor, secondaryColor],
+    var grad = ui.Gradient.radial(g[2][2], t, [doodleColor!, secondaryColor!],
         [3.0 * r / t, 4 * r / t], TileMode.mirror);
 
     //Gray circles
-    if (index <= 5)
+    if (index <= 5) {
       return Paint()
         ..style = PaintingStyle.stroke
         ..color = doodleColor
         ..strokeWidth = 0.2
         ..strokeCap = StrokeCap.round;
+    }
 
     //Gray triangles
-    if (index >= 6 && index <= 11)
+    if (index >= 6 && index <= 11) {
       return Paint()
         ..style = PaintingStyle.stroke
         ..shader = grad
         ..color = doodleColor
         ..strokeWidth = 0.2
         ..strokeCap = StrokeCap.round;
+    }
 
     //Outer conn.
-    if (index >= 12 && index <= 17)
+    if (index >= 12 && index <= 17) {
       return Paint()
         ..style = PaintingStyle.stroke
         ..color = secondaryColor
         ..strokeWidth = 0.2
         ..strokeCap = StrokeCap.round;
+    }
 
     //Center of inner circles
-    if (index >= 18 && index <= 23)
+    if (index >= 18 && index <= 23) {
       return Paint()
         ..style = PaintingStyle.fill
         ..color = secondaryColor
         ..strokeWidth = 0.2
         ..strokeCap = StrokeCap.round;
+    }
 
     //Inner spiral
-    if (index == 24)
+    if (index == 24) {
       return Paint()
         ..style = PaintingStyle.stroke
         ..color = primaryColor
         ..strokeWidth = 0.2
         ..strokeCap = StrokeCap.round;
+    }
 
     //Outer circles with connection to center
-    if (index >= 25 && index <= 36)
+    if (index >= 25 && index <= 36) {
       return Paint()
         ..style = PaintingStyle.stroke
         ..color = primaryColor
         ..strokeWidth = 0.2
         ..strokeCap = StrokeCap.round;
+    }
 
-    if (index == 37)
+    if (index == 37) {
       return Paint()
         ..style = PaintingStyle.stroke
         ..color = primaryColor
         ..strokeWidth = 0.2
         ..strokeCap = StrokeCap.square;
+    }
 
     //Default
     return Paint()
@@ -241,7 +253,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<Path> createMetatron() {
-    List<Path> paths = List();
+    List<Path> paths = [];
 
     //Inner circles 0 - 5
     paths

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:drawing_animation/src/parser.dart';
 
 void main() {
-  SvgParser parser = new SvgParser();
+  var parser = SvgParser();
 
   test('Test Svg path parsing - Unsupported', () {
     //No RGBA

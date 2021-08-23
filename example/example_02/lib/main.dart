@@ -1,16 +1,22 @@
 import 'package:drawing_animation/drawing_animation.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: MyHomePage());
+    return const MaterialApp(home: MyHomePage());
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -23,7 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
         child: SvgDrawingWithCustomController("assets/circle.svg"),
       ),
@@ -32,9 +38,10 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class SvgDrawingWithCustomController extends StatefulWidget {
-  SvgDrawingWithCustomController(this.assetName);
-
   final String assetName;
+  const SvgDrawingWithCustomController(this.assetName, {Key? key})
+      : super(key: key);
+
   @override
   SvgDrawingWithCustomControllerState createState() =>
       SvgDrawingWithCustomControllerState();
@@ -43,30 +50,30 @@ class SvgDrawingWithCustomController extends StatefulWidget {
 class SvgDrawingWithCustomControllerState
     extends State<SvgDrawingWithCustomController>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  AnimationController? _controller;
   bool _running = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = new AnimationController(
-      duration: Duration(seconds: 5),
+    _controller = AnimationController(
+      duration: const Duration(seconds: 5),
       vsync: this,
     );
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   void _startAnimation() {
     if (_running) {
-      _controller.stop();
+      _controller?.stop();
     } else {
-      _controller.stop();
-      _controller.repeat();
+      _controller?.stop();
+      _controller?.repeat();
     }
     _running = !_running;
   }
@@ -74,18 +81,20 @@ class SvgDrawingWithCustomControllerState
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: new BoxDecoration(
-          color: Colors.green,
+      decoration: const BoxDecoration(
+        color: Colors.green,
+      ),
+      child: GestureDetector(
+        onTap: () => _startAnimation(),
+        behavior: HitTestBehavior.translucent,
+        //AnimatedDrawing with a custom controller
+        child: AnimatedDrawing.svg(
+          widget.assetName,
+          controller: _controller,
+          lineAnimation: LineAnimation.oneByOne,
+          animationCurve: Curves.linear,
         ),
-        child: GestureDetector(
-            onTap: () => _startAnimation(),
-            behavior: HitTestBehavior.translucent,
-            //AnimatedDrawing with a custom controller
-            child: AnimatedDrawing.svg(
-              this.widget.assetName,
-              controller: this._controller,
-              lineAnimation: LineAnimation.oneByOne,
-              animationCurve: Curves.linear,
-            )));
+      ),
+    );
   }
 }

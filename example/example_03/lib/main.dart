@@ -1,36 +1,38 @@
 import 'dart:async';
-import 'dart:ui';
+
 import 'package:drawing_animation/drawing_animation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void main() => runApp(new MyApp());
+void main() {
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-    return new MaterialApp(
-      theme: new ThemeData(
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.bottom]);
+    return MaterialApp(
+      theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new HomePage(),
+      home: const HomePage(),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key key, this.title}) : super(key: key);
-  final String title;
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  HomePageState createState() => HomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class HomePageState extends State<HomePage> with TickerProviderStateMixin {
-  //name(0)  LineAnimation(1), animationCurve(2), duration(3), backgroundColor(4), isRepeat(5), PathOrder(6), web (7), title (8)
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   List<List> assets = [
     //0
     [
@@ -50,7 +52,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
       LineAnimation.oneByOne,
       Curves.linear,
       5,
-      Color.fromRGBO(224, 121, 42, 1.0),
+      const Color.fromRGBO(224, 121, 42, 1.0),
       false,
       PathOrders.original,
       "https://www.flickr.com/photos/britishlibrary/11009096375",
@@ -157,10 +159,10 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget createPage(int i, BuildContext context) {
     bool isLandscape =
         (MediaQuery.of(context).orientation == Orientation.portrait);
-    if (this.previousScreen != i) {
-      this.isRunning = false;
-      this.showStartButton = true;
-      this.previousScreen = i;
+    if (previousScreen != i) {
+      isRunning = false;
+      showStartButton = true;
+      previousScreen = i;
     }
 
     return Stack(children: <Widget>[
@@ -174,16 +176,16 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 flex: 6,
                 child: Center(
                     child: Padding(
-                        padding: EdgeInsets.all(24.0),
+                        padding: const EdgeInsets.all(24.0),
                         child: createInstructions(i))))
             : Container(),
         Flexible(
             flex: 12,
             child: Container(
-              padding: new EdgeInsets.all(10.0),
-              decoration: new BoxDecoration(),
+              padding: const EdgeInsets.all(10.0),
+              decoration: const BoxDecoration(),
               child: Stack(children: <Widget>[
-                (!this.isRunning && this.showStartButton)
+                (!isRunning && showStartButton)
                     ? Center(
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -216,8 +218,8 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     onTap: () => startAnimation(i),
                     child: AnimatedDrawing.svg(
                       "assets/${assets[i][0]}.svg",
-                      run: this.isRunning,
-                      duration: new Duration(seconds: assets[i][3]),
+                      run: isRunning,
+                      duration: Duration(seconds: assets[i][3]),
                       lineAnimation: assets[i][1],
                       animationCurve: assets[i][2],
                       animationOrder: assets[i][6],
@@ -225,15 +227,15 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         setState(() {
                           if (!assets[i][5]) {
                             //no-repeat
-                            this.isRunning = false;
-                            this.showStartButton = false;
+                            isRunning = false;
+                            showStartButton = false;
                           }
                         });
 
                         if (i == 0) {
-                          Timer(Duration(seconds: 2), () {
+                          Timer(const Duration(seconds: 2), () {
                             setState(() {
-                              this.showSwipe = true;
+                              showSwipe = true;
                             });
                           });
                         }
@@ -261,13 +263,12 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ? Column(children: <Widget>[
               AnimatedSize(
                   curve: Curves.bounceInOut,
-                  vsync: this,
-                  duration: new Duration(milliseconds: 800),
+                  duration: const Duration(milliseconds: 800),
                   child: Card(
-                      margin: EdgeInsets.all(20.0),
+                      margin: const EdgeInsets.all(20.0),
                       color: Colors.grey[250],
-                      child: new Container(
-                          padding: new EdgeInsets.all(10.0),
+                      child: Container(
+                          padding: const EdgeInsets.all(10.0),
                           child: Column(children: <Widget>[
                             Row(children: <Widget>[
                               Flexible(
@@ -289,14 +290,14 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   List<Widget> createCardOptions(int i) {
     List<Widget> options = <Widget>[
       Row(children: <Widget>[
-        (this.cardExpanded)
-            ? Expanded(
+        (cardExpanded)
+            ? const Expanded(
                 flex: 1,
                 child: Text("Asset: ",
                     style: TextStyle(fontWeight: FontWeight.bold)))
             : Text("${assets[i][8]}",
-                style: TextStyle(fontWeight: FontWeight.bold)),
-        (this.cardExpanded)
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+        (cardExpanded)
             ? Expanded(
                 flex: 1,
                 child: Align(
@@ -308,30 +309,30 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
             child: Align(
                 alignment: Alignment.centerRight,
                 child: IconButton(
-                  icon: Icon(Icons.settings),
+                  icon: const Icon(Icons.settings),
                   tooltip: 'Control path animations',
                   onPressed: () {
                     setState(() {
-                      this.cardExpanded = !this.cardExpanded;
+                      cardExpanded = !cardExpanded;
                     });
                   },
                 ))),
       ])
     ];
 
-    if (this.cardExpanded) {
+    if (cardExpanded) {
       options.addAll(<Widget>[
         Row(children: <Widget>[
           //LineAnimation
           Expanded(
               flex: 3,
               child: Row(children: <Widget>[
-                Expanded(
+                const Expanded(
                     child: Text("LineAnimation:",
                         style: TextStyle(fontWeight: FontWeight.bold))),
                 Expanded(
                     child: ChoiceChip(
-                  label: Text('allAtOnce'),
+                  label: const Text('allAtOnce'),
                   selected: assets[i][1] == LineAnimation.allAtOnce,
                   onSelected: (bool selected) {
                     setState(() {
@@ -343,7 +344,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 )),
                 Expanded(
                     child: ChoiceChip(
-                  label: Text('oneByOne'),
+                  label: const Text('oneByOne'),
                   selected: assets[i][1] == LineAnimation.oneByOne,
                   onSelected: (bool selected) {
                     setState(() {
@@ -360,12 +361,12 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
           Expanded(
               flex: 3,
               child: Row(children: <Widget>[
-                Expanded(
+                const Expanded(
                     child: Text("Repeat:",
                         style: TextStyle(fontWeight: FontWeight.bold))),
                 Expanded(
                     child: ChoiceChip(
-                  label: Text('Once'),
+                  label: const Text('Once'),
                   selected: assets[i][5] == false,
                   onSelected: (bool selected) {
                     setState(() {
@@ -375,7 +376,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 )),
                 Expanded(
                     child: ChoiceChip(
-                  label: Text('Infinite'),
+                  label: const Text('Infinite'),
                   selected: assets[i][5] == true,
                   onSelected: (bool selected) {
                     setState(() {
@@ -386,7 +387,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ])),
         ]),
         Row(children: <Widget>[
-          Expanded(
+          const Expanded(
               flex: 1,
               child: Text("AnimationCurve: ",
                   style: TextStyle(fontWeight: FontWeight.bold))),
@@ -394,28 +395,28 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
               flex: 1,
               child: DropdownButton<Curve>(
                 value: assets[i][2],
-                onChanged: (Curve curve) {
+                onChanged: (Curve? curve) {
                   setState(() {
                     assets[i][2] = curve;
                   });
                 },
                 items: curves.map((Curve curve) {
-                  return new DropdownMenuItem<Curve>(
+                  return DropdownMenuItem<Curve>(
                     value: curve,
-                    child: new Text(
+                    child: Text(
                       curve.runtimeType
                           .toString()
                           .substring(1)
-                          .replaceAll(new RegExp(r'Curve'), ''),
+                          .replaceAll(RegExp(r'Curve'), ''),
                       overflow: TextOverflow.ellipsis,
-                      style: new TextStyle(color: Colors.black),
+                      style: const TextStyle(color: Colors.black),
                     ),
                   );
                 }).toList(),
               )),
         ]),
         Row(children: <Widget>[
-          Expanded(
+          const Expanded(
               flex: 1,
               child: Text("PathOrder: ",
                   style: TextStyle(fontWeight: FontWeight.bold))),
@@ -423,21 +424,21 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
               flex: 1,
               child: DropdownButton<PathOrder>(
                 value: assets[i][6],
-                onChanged: (PathOrder order) {
+                onChanged: (PathOrder? order) {
                   setState(() {
                     assets[i][6] = order;
                   });
                 },
                 items: paintOrderFunctions.map((List orders) {
-                  return new DropdownMenuItem<PathOrder>(
+                  return DropdownMenuItem<PathOrder>(
                     value: orders[1],
-                    child: new Text("${orders[0]}"),
+                    child: Text("${orders[0]}"),
                   );
                 }).toList(),
               )),
         ]),
         Row(children: <Widget>[
-          Expanded(
+          const Expanded(
               flex: 1,
               child: Text("Duration: ",
                   style: TextStyle(fontWeight: FontWeight.bold))),
@@ -464,16 +465,14 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     switch (i) {
       case 0:
         return wrap([
-          Expanded(
+          const Expanded(
               child: Text(
                   "This is a simple application showcasing the capabilities of the `drawing_animation` package.")),
-          (this.showSwipe && i == 0 && !this.isRunning)
-              ? getSwipeWidget()
-              : Container(),
+          (showSwipe && i == 0 && !isRunning) ? getSwipeWidget() : Container(),
         ]);
       case 1:
         return wrap([
-          Text(
+          const Text(
               "Path elements are either drawn one after the other or all at once."),
           Row(children: <Widget>[
             createChoiceChip(i, 1, "oneByOne", LineAnimation.oneByOne),
@@ -482,7 +481,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ]);
       case 2:
         return wrap([
-          Text(
+          const Text(
               "The animation order defines which path segment is drawn first on the canvas."),
           Row(children: <Widget>[
             createChoiceChip(i, 6, "toRight", PathOrders.leftToRight),
@@ -493,7 +492,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ]);
       case 3:
         return wrap([
-          Text(
+          const Text(
               "A different animation order is e.g. obtained via the size of each element: "),
           Row(children: <Widget>[
             createChoiceChip(i, 6, "toRight", PathOrders.leftToRight),
@@ -503,7 +502,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ]);
       case 4:
         return wrap([
-          Text(
+          const Text(
               "Curves in Flutter are used to manipulate the change of an animation over time."),
           Row(children: <Widget>[
             createChoiceChip(i, 2, "linear", Curves.linear),
@@ -511,17 +510,17 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ]),
         ]);
       default:
-        return Text("Generic here...");
+        return const Text("Generic here...");
     }
   }
 
   Widget getSwipeWidget() {
     return Expanded(
         child: Container(
-            padding: new EdgeInsets.all(1.0),
+            padding: const EdgeInsets.all(1.0),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
+                children: const <Widget>[
                   Icon(Icons.arrow_back_ios),
                   Icon(Icons.arrow_back_ios),
                   Text("Swipe left!"),
@@ -537,14 +536,14 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         if (selected) {
           setState(() {
             //Restart animation - Pause
-            this.isRunning = false;
-            this.showStartButton = false;
+            isRunning = false;
+            showStartButton = false;
           });
 
-          Timer(Duration(milliseconds: 10), () {
+          Timer(const Duration(milliseconds: 10), () {
             setState(() {
               assets[i][j] = object;
-              this.isRunning = true;
+              isRunning = true;
             });
           });
         }
@@ -563,16 +562,16 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         if (selected) {
           setState(() {
             //Restart animation - Pause
-            this.isRunning = false;
-            this.showStartButton = false;
+            isRunning = false;
+            showStartButton = false;
           });
 
-          Timer(Duration(milliseconds: 10), () {
+          Timer(const Duration(milliseconds: 10), () {
             setState(() {
               for (int m = 0; m < objects.length; m++) {
                 assets[i][jj[m]] = objects[m];
               }
-              this.isRunning = true;
+              isRunning = true;
             });
           });
         }
@@ -582,9 +581,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget wrap(List<Widget> widgets) {
     return Container(
-        padding: EdgeInsets.all(10.0),
-        decoration: new BoxDecoration(
-          border: new Border.all(color: Colors.black),
+        padding: const EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.black),
           color: Colors.white,
         ),
         child: Column(
@@ -603,7 +602,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   void startAnimation(int i) {
     setState(() {
-      this.isRunning = !this.isRunning;
+      isRunning = !isRunning;
     });
   }
 }
