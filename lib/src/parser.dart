@@ -130,6 +130,13 @@ class SvgParser {
     loadFromString(svgString);
   }
 
+  /// Parses Svg from svg String
+
+  Future<void> loadFromSVGString(String value) async {
+    _pathSegments.clear();
+    loadFromString(value);
+  }
+
   /// Returns extracted [PathSegment] elements of parsed Svg
   List<PathSegment> getPathSegments() {
     return _pathSegments;

@@ -51,9 +51,35 @@ class AnimatedDrawing extends StatefulWidget {
     this.scaleToViewport = true,
     this.debug,
   })  : paths = [],
-        paints = [] {
+        paints = [],
+        svgString = '' {
     assertAnimationParameters();
     assert(assetPath.isNotEmpty);
+  }
+
+  AnimatedDrawing.svgString(
+    this.svgString, {
+    //Standard
+    this.controller,
+    //Simplified version
+    this.run,
+    this.duration,
+    this.animationCurve,
+    this.onFinish,
+    this.onPaint,
+    //For both
+    this.animationOrder,
+    this.width,
+    this.height,
+    this.range,
+    this.lineAnimation = LineAnimation.oneByOne,
+    this.scaleToViewport = true,
+    this.debug,
+  })  : paths = [],
+        paints = [],
+        assetPath = '' {
+    assertAnimationParameters();
+    assert(svgString.isNotEmpty);
   }
 
   /// Creates an instance of [AnimatedDrawing] by directly passing path elements to the constructor (still experimental).
@@ -97,7 +123,8 @@ class AnimatedDrawing extends StatefulWidget {
     this.lineAnimation = LineAnimation.oneByOne,
     this.scaleToViewport = true,
     this.debug,
-  }) : assetPath = '' {
+  })  : assetPath = '',
+        svgString = '' {
     assertAnimationParameters();
     assert(paths.isNotEmpty);
     if (paints.isNotEmpty) assert(paints.length == paths.length);
@@ -107,6 +134,9 @@ class AnimatedDrawing extends StatefulWidget {
   ///
   /// For instance an SVG file named my_svg would be specified as "assets/my_svg.svg". Also see * [Supported SVG specifications](https://github.com/biocarl/drawing_animation#supported-svg-specifications).
   final String assetPath;
+
+  /// For instance an SVG String
+  final String svgString;
 
   /// Provide path data via an list of Path objects.
   ///

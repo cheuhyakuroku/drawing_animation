@@ -163,10 +163,10 @@ class OneByOnePainter extends PathPainter {
             : (Paint() //Paint per path TODO implement Paint per PathSegment?
               //TODO Debug disappearing first lineSegment
               // ..color = (segment.relativeIndex == 0 && segment.pathIndex== 0) ? Colors.red : ((segment.relativeIndex == 1) ? Colors.blue : segment.color)
-              ..color = segment.color
+              ..color = Colors.blue
               ..style = PaintingStyle.stroke
-              ..strokeCap = StrokeCap.square
-              ..strokeWidth = segment.strokeWidth);
+              ..strokeCap = StrokeCap.round
+              ..strokeWidth = 1);
         canvas.drawPath(segment.path, paint);
       });
 

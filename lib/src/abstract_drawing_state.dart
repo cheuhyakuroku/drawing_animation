@@ -21,6 +21,7 @@ abstract class AbstractAnimatedDrawingState extends State<AnimatedDrawing> {
   Curve? animationCurve;
   AnimationRange? range;
   String? assetPath;
+  String? svgString;
   PathOrder? animationOrder;
   DebugOptions? debug;
   int lastPaintedPathIndex = -1;
@@ -255,7 +256,10 @@ abstract class AbstractAnimatedDrawingState extends State<AnimatedDrawing> {
 
   void parsePathData() {
     var parser = SvgParser();
-    if (svgAssetProvided()) {
+    if (svgStringProvided()) {
+      if (widget.svgString == svgString) return;
+      parseFromSvgString(parser);
+    } else if (svgAssetProvided()) {
       if (widget.assetPath == assetPath) return;
       parseFromSvgAsset(parser);
     } else if (pathsProvided()) {
@@ -275,6 +279,8 @@ abstract class AbstractAnimatedDrawingState extends State<AnimatedDrawing> {
 
   bool svgAssetProvided() => widget.assetPath.isNotEmpty;
 
+  bool svgStringProvided() => widget.svgString.isNotEmpty;
+
   void parseFromSvgAsset(SvgParser parser) {
     parser.loadFromFile(widget.assetPath).then((_) {
       setState(() {
@@ -284,6 +290,19 @@ abstract class AbstractAnimatedDrawingState extends State<AnimatedDrawing> {
         //corresponding segments
         pathSegments = parser.getPathSegments();
         assetPath = widget.assetPath;
+      });
+    });
+  }
+
+  void parseFromSvgString(SvgParser parser) {
+    parser.loadFromSVGString(widget.svgString).then((_) {
+      setState(() {
+        //raw paths
+        widget.paths.clear();
+        widget.paths.addAll(parser.getPaths());
+        //corresponding segments
+        pathSegments = parser.getPathSegments();
+        svgString = widget.svgString;
       });
     });
   }
